@@ -1,7 +1,0 @@
-{% extends "experiences/base.html" %}
-{% block content %}
-  <h1 class="h4">{{ e.company }} — {{ e.title }}</h1>
-  <p class="lead">{{ e.summary }}</p>
-  <p>{{ e.body }}</p>
-  <p class="text-muted small">Publicada: {{ e.created_at|date:"Y-m-d H:i" }}</p>
-{% endblock %}
