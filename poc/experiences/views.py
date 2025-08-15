@@ -1,47 +1,41 @@
-# poc/experiences/views.py
 from django.shortcuts import render, get_object_or_404, redirect
-from django import forms
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 
 from .models import Experience
+from .forms import ExperienceForm
 
 
-# -------- Home (lista + búsqueda) --------
+# 🏠 Home
 def home(request):
-    q = request.GET.get('q', '')
-    exps = Experience.objects.all()
-    if q:
-        exps = exps.filter(title__icontains=q) | exps.filter(company__icontains=q)
-    return render(request, 'experiences/home.html', {'exps': exps, 'q': q})
+    q = request.GET.get("q") if request.GET.get("q") else ""
+    exps = Experience.objects.filter(company__icontains=q) | Experience.objects.filter(title__icontains=q)
+    return render(request, "experiences/home.html", {"exps": exps, "q": q})
 
 
-# -------- Detalle --------
+# 📄 Detalle
 def detail(request, pk):
-    e = get_object_or_404(Experience, pk=pk)
-    return render(request, 'experiences/detail.html', {'e': e})
+    exp = get_object_or_404(Experience, pk=pk)
+    return render(request, "experiences/detail.html", {"e": exp})
 
 
-# -------- US1 PoC: Publicar --------
-class ExperienceForm(forms.ModelForm):
-    class Meta:
-        model = Experience
-        fields = ["company", "title", "summary", "body"]
-
+# ➕ Crear experiencia (requiere login)
 @login_required(login_url="/login/")
 def create_experience(request):
     if request.method == "POST":
         form = ExperienceForm(request.POST)
         if form.is_valid():
-            exp = form.save()
+            exp = form.save(commit=False)
+            exp.author = request.user   # 👈 se guarda el autor pero no se muestra en público
+            exp.save()
             return redirect("detail", pk=exp.pk)
     else:
         form = ExperienceForm()
-    return render(request, 'experiences/new.html', {"form": form})
+    return render(request, "experiences/new.html", {"form": form})
 
 
-# -------- US5/US6 PoC: Registro / Login / Logout --------
+# 🔑 Registro
 def signup(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -51,8 +45,10 @@ def signup(request):
             return redirect("home")
     else:
         form = UserCreationForm()
-    return render(request, 'experiences/signup.html', {"form": form})
+    return render(request, "experiences/signup.html", {"form": form})
 
+
+# 🔐 Login
 def signin(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
@@ -62,8 +58,10 @@ def signin(request):
             return redirect("home")
     else:
         form = AuthenticationForm()
-    return render(request, 'experiences/login.html', {"form": form})
+    return render(request, "experiences/login.html", {"form": form})
 
+
+# 🚪 Logout
 def signout(request):
     logout(request)
     return redirect("home")

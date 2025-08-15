@@ -1,14 +1,19 @@
 {% extends "experiences/base.html" %}
+
 {% block content %}
-  <h1 class="h4 mb-3">Experiencias</h1>
-  <div class="list-group">
-    {% for e in exps %}
-      <a class="list-group-item list-group-item-action" href="{% url 'detail' e.pk %}">
-        <strong>{{ e.company }}</strong> — {{ e.title }}
-        <div class="small text-muted">{{ e.summary }}</div>
-      </a>
-    {% empty %}
-      <div class="alert alert-info">No hay resultados.</div>
-    {% endfor %}
-  </div>
+  <h2 class="mb-4">Publicaciones</h2>
+
+  {% if exps %}
+    <ul class="list-group">
+      {% for e in exps %}
+        <li class="list-group-item">
+          <h5>{{ e.company }} – {{ e.title }}</h5>
+          <p class="mb-1">{{ e.summary }}</p>
+          <a href="{% url 'detail' e.pk %}" class="btn btn-link">Ver detalle</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No hay publicaciones disponibles.</p>
+  {% endif %}
 {% endblock %}
