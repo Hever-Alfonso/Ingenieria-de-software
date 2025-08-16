@@ -1,7 +1,45 @@
 {% extends "experiences/base.html" %}
+
+{# 
+  Vista de detalle de publicación
+  =========================================
+  - Hereda la estructura y estilos globales de base.html
+  - Muestra la información completa de una experiencia/publicación
+  - Todo en modo oscuro y con texto claro para buena legibilidad
+#}
 {% block content %}
-  <h1 class="h4">{{ e.company }} — {{ e.title }}</h1>
-  <p class="lead">{{ e.summary }}</p>
-  <p>{{ e.body }}</p>
-  <p class="text-muted small">Publicada: {{ e.created_at|date:"Y-m-d H:i" }}</p>
+  <style>
+    /* Ajuste extra:
+       Forzamos los textos con .text-muted a un tono claro
+       porque Bootstrap por defecto los deja en gris oscuro */
+    .text-muted {
+      color: #e9eef7 !important;
+    }
+  </style>
+
+  {# ===== Contenedor principal ===== #}
+  <div class="card">
+    <div class="card-body">
+      
+      {# Empresa: pequeña etiqueta destacada en azul #}
+      <span class="badge bg-primary mb-2">{{ e.company }}</span>
+
+      {# Título de la experiencia #}
+      <h2 class="h5 text-white mb-2">{{ e.title }}</h2>
+
+      {# Resumen corto de la experiencia #}
+      <p class="text-muted mb-2">{{ e.summary }}</p>
+
+      {# Descripción detallada #}
+      <p class="text-white">{{ e.body }}</p>
+
+      {# Fecha de publicación, alineada a la derecha #}
+      <p class="text-muted small text-end mb-0">
+        {{ e.created_at|date:"Y-m-d H:i" }}
+      </p>
+
+      {# Botón para volver al listado de publicaciones (home) #}
+      <a href="{% url 'home' %}" class="btn btn-outline-light mt-3">Volver</a>
+    </div>
+  </div>
 {% endblock %}

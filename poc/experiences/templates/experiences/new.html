@@ -1,8 +1,39 @@
 {% extends "experiences/base.html" %}
+
+{# 
+  Vista: Crear nueva publicación
+  =========================================
+  - Hereda la estructura base (tema oscuro, navbar, footer).
+  - Muestra un formulario para publicar una nueva experiencia.
+  - Incluye protección CSRF.
+  - Ofrece botones para publicar o cancelar (volver al home).
+#}
 {% block content %}
-  <h1 class="h4 mb-3">Publicar experiencia</h1>
-  <form method="post" class="vstack gap-3">{% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-primary">Publicar</button>
-  </form>
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      
+      {# Contenedor de la tarjeta (card) para el formulario #}
+      <div class="card">
+        <div class="card-body">
+          
+          {# Título del formulario #}
+          <h1 class="h5 mb-3">Publicar experiencia</h1>
+          
+          {# Formulario de Django con CSRF para seguridad #}
+          <form method="post">
+            {% csrf_token %}
+            
+            {# Renderizado automático de los campos del modelo (company, title, summary, body, etc.) #}
+            {{ form.as_p }}
+            
+            {# Botón principal para guardar la publicación #}
+            <button class="btn btn-primary">Publicar</button>
+            
+            {# Botón secundario para cancelar y volver al home #}
+            <a class="btn btn-outline-light ms-2" href="{% url 'home' %}">Cancelar</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

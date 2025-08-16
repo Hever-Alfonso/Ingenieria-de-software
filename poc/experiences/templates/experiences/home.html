@@ -1,19 +1,45 @@
 {% extends "experiences/base.html" %}
 
+{# 
+  Vista principal (Home)
+  =========================================
+  - Hereda de base.html para mantener el tema oscuro, navbar y footer.
+  - Lista todas las publicaciones (experiences).
+  - Cada publicación se muestra en un ítem con título, empresa, descripción y link al detalle.
+  - Si no existen publicaciones, se muestra un aviso con opción para crear la primera.
+#}
 {% block content %}
-  <h2 class="mb-4">Publicaciones</h2>
+<div class="container mt-4">
+  
+  {# Título principal de la sección #}
+  <h2 class="text-light mb-4">Publicaciones</h2>
 
-  {% if exps %}
+  {% if experiences %}
+    {# Lista de publicaciones existentes #}
     <ul class="list-group">
-      {% for e in exps %}
-        <li class="list-group-item">
-          <h5>{{ e.company }} – {{ e.title }}</h5>
-          <p class="mb-1">{{ e.summary }}</p>
-          <a href="{% url 'detail' e.pk %}" class="btn btn-link">Ver detalle</a>
+      {% for e in experiences %}
+        <li class="list-group-item bg-dark text-light mb-2 border rounded">
+          
+          {# Nombre de la empresa + título de la publicación #}
+          <h5 class="fw-bold">{{ e.company }} – {{ e.title }}</h5>
+
+          {# Descripción corta de la publicación #}
+          <p class="mb-1">{{ e.description }}</p>
+
+          {# Fecha de creación en formato reducido #}
+          <small class="text-muted">{{ e.date }}</small><br>
+
+          {# Botón/link que lleva a la vista detalle de esta publicación #}
+          <a href="{% url 'detail' e.id %}" class="btn btn-sm btn-outline-info mt-2">Ver detalle</a>
         </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p>No hay publicaciones disponibles.</p>
+    {# Mensaje alternativo cuando no hay publicaciones #}
+    <div class="alert alert-secondary bg-dark text-light">
+      No hay publicaciones.  
+      <a href="{% url 'new' %}" class="btn btn-primary btn-sm">Crea la primera</a>
+    </div>
   {% endif %}
+</div>
 {% endblock %}

@@ -1,8 +1,105 @@
 {% extends "experiences/base.html" %}
+
+{# 
+  Vista de registro (signup)
+  ==========================================
+  - Hereda layout y estilos base desde base.html
+  - Define un formulario de creación de usuario con estilos adaptados al tema oscuro
+  - Incluye manejo de errores y textos de ayuda para guiar al usuario
+#}
 {% block content %}
-  <h1 class="h4 mb-3">Crear cuenta</h1>
-  <form method="post" class="vstack gap-3">{% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-success">Registrarme</button>
-  </form>
+  <style>
+    /* ===== Estilos locales para signup ===== */
+
+    /* Contenedor del formulario (centrado y con ancho controlado) */
+    .auth-card { 
+      max-width: 520px; 
+      margin-inline: auto; 
+    }
+
+    /* Etiquetas más marcadas para accesibilidad */
+    .form-label { 
+      font-weight: 600; 
+    }
+
+    /* Campos de formulario en modo oscuro */
+    input, select, textarea {
+      background: #0d1117 !important;
+      color: #e9eef7 !important;
+      border: 1px solid #30363d !important;
+    }
+
+    /* Efecto focus (resalta campo activo en azul) */
+    input:focus, select:focus, textarea:focus {
+      box-shadow: 0 0 0 .2rem rgba(88,166,255,.25) !important;
+      border-color: #58a6ff !important;
+      outline: 0;
+    }
+
+    /* Textos de ayuda (help_text de Django) en blanco suave */
+    .helptext, .helptext ul, .helptext li {
+      color: #e9eef7 !important;
+      font-size: .85rem;
+      margin-top: .25rem;
+    }
+
+    /* Errores en rojo claro y sin viñetas */
+    .errorlist { 
+      list-style: none; 
+      padding: 0; 
+      margin: .25rem 0 0; 
+      color: #ffb4b4; 
+    }
+  </style>
+
+  {# ===== Tarjeta principal del formulario ===== #}
+  <div class="card auth-card">
+    <div class="card-body">
+      <h1 class="h5 mb-3 text-light">Crear cuenta</h1>
+
+      {# Formulario de registro con protección CSRF #}
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {# ---- Campo usuario ---- #}
+        <div class="mb-3">
+          <label class="form-label" for="{{ form.username.id_for_label }}">Usuario</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <ul class="errorlist">{{ form.username.errors }}</ul>
+          {% endif %}
+          {% if form.username.help_text %}
+            <div class="helptext">{{ form.username.help_text|safe }}</div>
+          {% endif %}
+        </div>
+
+        {# ---- Campo contraseña ---- #}
+        <div class="mb-3">
+          <label class="form-label" for="{{ form.password1.id_for_label }}">Contraseña</label>
+          {{ form.password1 }}
+          {% if form.password1.errors %}
+            <ul class="errorlist">{{ form.password1.errors }}</ul>
+          {% endif %}
+          {% if form.password1.help_text %}
+            <div class="helptext">{{ form.password1.help_text|safe }}</div>
+          {% endif %}
+        </div>
+
+        {# ---- Confirmación de contraseña ---- #}
+        <div class="mb-4">
+          <label class="form-label" for="{{ form.password2.id_for_label }}">Confirmar contraseña</label>
+          {{ form.password2 }}
+          {% if form.password2.errors %}
+            <ul class="errorlist">{{ form.password2.errors }}</ul>
+          {% endif %}
+          {% if form.password2.help_text %}
+            <div class="helptext">{{ form.password2.help_text|safe }}</div>
+          {% endif %}
+        </div>
+
+        {# Botón principal para registrar #}
+        <button class="btn btn-success w-100">Registrarme</button>
+      </form>
+    </div>
+  </div>
 {% endblock %}
