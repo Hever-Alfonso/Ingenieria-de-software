@@ -16,6 +16,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.http import HttpResponse
 
 from .models import Experience, CompanySummary, Comment
 from .forms import ExperienceForm, CommentForm
@@ -263,21 +264,33 @@ def create_experience(request):
 
 
 # ============================================================
-# 🔹 Resúmenes por empresa (overview + detalle)
+# 🔹 Resúmenes por empresa (overview + detalle + health)
+# ------------------------------------------------------------
+# companies_overview:
+#   - Lista todas las empresas registradas en CompanySummary
+#     con su resumen generado, en orden alfabético.
+#
+# company_summary_detail:
+#   - Muestra el resumen específico de una empresa.
+#   - Antes de renderizar, recalcula/asegura que el resumen esté actualizado.
+#
+# health:
+#   - Endpoint simple de verificación (health check).
+#   - Responde "OK - AskMeJobs" si el servicio está activo.
 # ============================================================
 
 def companies_overview(request):
-    """
-    Lista de resúmenes por empresa (CompanySummary), ordenados alfabéticamente.
-    """
+    """Lista de resúmenes por empresa (ordenadas alfabéticamente)."""
     companies = CompanySummary.objects.order_by("company")
     return render(request, "experiences/companies_overview.html", {"companies": companies})
 
 
 def company_summary_detail(request, company):
-    """
-    Vista de detalle del resumen de 'company'.
-    - Recalcula/asegura el resumen antes de mostrarlo.
-    """
+    """Vista de detalle del resumen de una empresa específica."""
     obj = _ensure_company_summary(company)
     return render(request, "experiences/company_summary_detail.html", {"summary": obj})
+
+
+def health(request):
+    """Endpoint de salud (health check)."""
+    return HttpResponse("OK - AskMeJobs")

@@ -52,8 +52,17 @@ urlpatterns = [
     # -------------------------
     path('companies/', views.companies_overview, name='companies_overview'),
     # Vista que muestra el listado de empresas con sus resúmenes generales.
+    # Sirve para ver un panorama general de todas las experiencias agrupadas por compañía.
 
     path('companies/<str:company>/', views.company_summary_detail, name='company_summary_detail'),
     # Vista detallada del resumen de una empresa específica.
-    # <str:company> se usa para capturar el nombre de la empresa en la URL.
+    # <str:company> captura el nombre de la empresa directamente desde la URL.
+    # Permite consultar rápidamente cómo se resumen las experiencias de esa compañía.
+
+    # -------------------------
+    # Ruta de verificación (Health Check)
+    # -------------------------
+    path('health/', views.health, name='health'),
+    # Endpoint simple de verificación para comprobar
+    # que la aplicación responde correctamente (útil en pruebas o despliegues).
 ]
