@@ -1,45 +1,77 @@
 {% extends "experiences/base.html" %}
 
-{# 
-  Vista principal (Home)
-  =========================================
-  - Hereda de base.html para mantener el tema oscuro, navbar y footer.
-  - Lista todas las publicaciones (experiences).
-  - Cada publicación se muestra en un ítem con título, empresa, descripción y link al detalle.
-  - Si no existen publicaciones, se muestra un aviso con opción para crear la primera.
-#}
 {% block content %}
+
 <div class="container mt-4">
   
-  {# Título principal de la sección #}
-  <h2 class="text-light mb-4">Publicaciones</h2>
+  {% comment %}
+    Encabezado de la página
+    - A la izquierda: título "Publicaciones"
+    - A la derecha: botón que lleva a "companies_overview"
+  {% endcomment %}
+  <div class="d-flex justify-content-between align-items-center">
+    <h2 class="text-light mb-4">Publicaciones</h2>
+    <a href="{% url 'companies_overview' %}" class="btn btn-outline-info">
+      Ver resumen por empresa
+    </a>
+  </div>
 
+  {% comment %}
+    Formulario de búsqueda
+    - Método GET para filtrar publicaciones
+    - Input con valor inicial {{ q }} si el usuario ya buscó algo
+    - Placeholder guía al usuario
+  {% endcomment %}
+  <form method="get" class="mb-3">
+    <input
+      type="text"
+      name="q"
+      value="{{ q }}"
+      class="form-control"
+      placeholder="Buscar por empresa o título…"
+    >
+  </form>
+
+  {% comment %}
+    Verificamos si hay publicaciones
+    - La vista pasa un queryset "experiences"
+  {% endcomment %}
   {% if experiences %}
-    {# Lista de publicaciones existentes #}
     <ul class="list-group">
+      
+      {% comment %}
+        Bucle que recorre cada experiencia (e)
+        - e.company: nombre de la empresa
+        - e.title: título de la publicación
+        - e.summary: breve descripción
+        - e.created_at: fecha/hora (formato YYYY-MM-DD HH:mm)
+        - Botón: link a la vista "detail" con ID de la experiencia
+      {% endcomment %}
       {% for e in experiences %}
         <li class="list-group-item bg-dark text-light mb-2 border rounded">
-          
-          {# Nombre de la empresa + título de la publicación #}
           <h5 class="fw-bold">{{ e.company }} – {{ e.title }}</h5>
-
-          {# Descripción corta de la publicación #}
-          <p class="mb-1">{{ e.description }}</p>
-
-          {# Fecha de creación en formato reducido #}
-          <small class="text-muted">{{ e.date }}</small><br>
-
-          {# Botón/link que lleva a la vista detalle de esta publicación #}
-          <a href="{% url 'detail' e.id %}" class="btn btn-sm btn-outline-info mt-2">Ver detalle</a>
+          <p class="mb-1">{{ e.summary }}</p>
+          <small class="text-muted">
+            {{ e.created_at|date:"Y-m-d H:i" }}
+          </small><br>
+          <a href="{% url 'detail' e.id %}" class="btn btn-sm btn-outline-info mt-2">
+            Ver detalle
+          </a>
         </li>
       {% endfor %}
     </ul>
+
+  {% comment %}
+    Rama "no data"
+    - Si aún no hay publicaciones, mostramos alerta oscura
+    - Botón para crear la primera publicación
+  {% endcomment %}
   {% else %}
-    {# Mensaje alternativo cuando no hay publicaciones #}
     <div class="alert alert-secondary bg-dark text-light">
-      No hay publicaciones.  
+      No hay publicaciones.
       <a href="{% url 'new' %}" class="btn btn-primary btn-sm">Crea la primera</a>
     </div>
   {% endif %}
 </div>
+
 {% endblock %}

@@ -1,6 +1,11 @@
+# ============================================
 # poc/experiences/forms.py
+# Definición de formularios basados en modelos
+# ============================================
+
 from django import forms
-from .models import Experience
+from .models import Experience, Comment
+
 
 # =======================
 # 🔹 FORMULARIO EXPERIENCE
@@ -8,19 +13,41 @@ from .models import Experience
 class ExperienceForm(forms.ModelForm):
     """
     Formulario basado en el modelo Experience.
-    Se utiliza para crear nuevas experiencias desde la interfaz web.
-
-    Django genera automáticamente los inputs HTML a partir de los campos
-    que indiquemos en 'fields'.
+    Se utiliza para que los usuarios puedan crear nuevas publicaciones
+    (experiencias) directamente desde la interfaz web.
     """
-
     class Meta:
-        # Modelo del cual se va a generar el formulario
-        model = Experience  
-
-        # Campos que estarán disponibles en el formulario
+        # Modelo en el cual se basa este formulario
+        model = Experience
+        
+        # Campos del modelo que queremos mostrar en el formulario
         fields = ["company", "title", "summary", "body"]
-        # Nota: el campo 'author' y 'created_at' NO se incluyen aquí
-        # porque:
-        # - author lo asociamos automáticamente en la vista con request.user
-        # - created_at se asigna solo al guardar (auto_now_add)
+
+
+# =======================
+# 🔹 FORMULARIO COMMENT
+# =======================
+class CommentForm(forms.ModelForm):
+    """
+    Formulario para agregar comentarios a una publicación.
+    Solo incluye el campo 'text' (contenido del comentario).
+    """
+    class Meta:
+        # Modelo en el cual se basa este formulario
+        model = Comment
+        
+        # Campo único a capturar desde el usuario
+        fields = ["text"]
+        
+        # Personalización del widget:
+        #   - Textarea en lugar de input de texto
+        #   - 3 filas de alto
+        #   - Placeholder que guía al usuario
+        widgets = {
+            "text": forms.Textarea(
+                attrs={
+                    "rows": 3,
+                    "placeholder": "Escribe tu comentario…"
+                }
+            )
+        }
