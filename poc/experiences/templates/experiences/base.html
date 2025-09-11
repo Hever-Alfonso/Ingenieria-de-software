@@ -6,11 +6,28 @@
   <title>AskMeJobs</title>
 
   <!-- ===== Bootstrap para estilos base ===== -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 
   <style>
-    /* ===== Tema oscuro global (fondo y texto base) ===== */
-    body { background-color: #0d1117; color: #c9d1d9; }
+    /* ===== Altura completa y flexbox para el footer ===== */
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #0d1117;
+      color: #c9d1d9;
+    }
+
+    main {
+      flex: 1;
+    }
 
     /* Tarjetas en modo oscuro */
     .card { background-color: #161b22; border: 1px solid #30363d; }
@@ -53,27 +70,16 @@
   <nav class="navbar navbar-expand-lg border-bottom">
     <div class="container py-2">
       <!-- Logo / enlace a inicio -->
-      <a class="navbar-brand text-white fw-semibold" href="{% url 'home' %}">AskMeJobs</a>
+      <a class="navbar-brand text-white fw-semibold fs-2" href="{% url 'index' %}">AskMeJobs</a>
 
       <!-- Contenedor de acciones (derecha) -->
       <div class="d-flex align-items-center gap-2 ms-auto">
-        
-        <!-- Barra de búsqueda -->
-        <form class="d-none d-md-block" method="get" action="{% url 'home' %}">
-          <input class="form-control form-control-sm bg-dark text-white border-0"
-                 name="q" value="{{ q|default:'' }}" placeholder="Buscar empresa o título">
-        </form>
-
-        <!-- Botón para crear nueva publicación -->
-        <a class="btn btn-primary btn-sm" href="{% url 'new' %}">Publicar</a>
-
-        <!-- Mostrar opciones según autenticación -->
         {% if user.is_authenticated %}
           <span class="small text-light d-none d-sm-inline">Hola, {{ user.username }}</span>
           <a class="btn btn-outline-light btn-sm" href="{% url 'logout' %}">Salir</a>
         {% else %}
-          <a class="btn btn-outline-light btn-sm" href="{% url 'signup' %}">Registro</a>
-          <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Entrar</a>
+          <a class="btn btn-outline-light btn-sm" href="{% url 'signup' %}">Registrarme</a>
+          <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Iniciar Sesión</a>
         {% endif %}
       </div>
     </div>
