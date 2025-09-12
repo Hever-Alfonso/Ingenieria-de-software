@@ -23,41 +23,24 @@ urlpatterns = [
     # -------------------------
     # Página principal
     # -------------------------
-    path('', views.home, name='home'),
-    # Muestra lista general o bienvenida (vista home).
+    path('', views.index, name='index'),
 
     # -------------------------
-    # Publicaciones (Experiences)
+    # Experiencias por empresa
     # -------------------------
-    path('exp/<int:pk>/', views.detail, name='detail'),
-    # Vista de detalle de una publicación específica (pk = primary key).
+    path("enterprises/<int:pk>/experiences/", views.enterprise_experiences, name="enterprise_experiences"),
 
-    path('new/', views.create_experience, name='new'),
-    # Formulario para crear una nueva publicación/experiencia.
+    # -------------------------
+    # Detalle de experiencia y comentarios
+    # -------------------------
+    path("reviews/<int:pk>/", views.review_detail, name="review_detail"),
 
     # -------------------------
     # Autenticación de usuarios
     # -------------------------
     path('signup/', views.signup, name='signup'),
-    # Registro de un nuevo usuario.
-
     path('login/', views.signin, name='login'),
-    # Inicio de sesión (login).
-
     path('logout/', views.signout, name='logout'),
-    # Cierre de sesión (logout).
-
-    # -------------------------
-    # Resúmenes por empresa
-    # -------------------------
-    path('companies/', views.companies_overview, name='companies_overview'),
-    # Vista que muestra el listado de empresas con sus resúmenes generales.
-    # Sirve para ver un panorama general de todas las experiencias agrupadas por compañía.
-
-    path('companies/<str:company>/', views.company_summary_detail, name='company_summary_detail'),
-    # Vista detallada del resumen de una empresa específica.
-    # <str:company> captura el nombre de la empresa directamente desde la URL.
-    # Permite consultar rápidamente cómo se resumen las experiencias de esa compañía.
 
     # -------------------------
     # Ruta de verificación (Health Check)

@@ -1,0 +1,66 @@
+{% extends "experiences/base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- ===== Titulo e información ===== -->
+    <div class="d-flex flex-column mb-3">
+        <h2 class="text-light">Empresas</h2>
+        <h10 class="mb-0">
+        Estas son las empresas disponibles en la plataforma. Selecciona una para ver sus reviews o busca a continuación:
+        </h10>
+    </div>
+    <!-- ===== Barra de búsqueda por nombre de empresa ===== -->
+    <form method="get" class="mb-4">
+        <div class="d-flex gap-2">
+            <input
+                type="text"
+                name="q"
+                value="{{ q }}"
+                class="form-control"
+                placeholder="Buscar por nombre de empresa..."
+                aria-label="Buscar empresas"
+                input:focus {
+                    outline: none;
+                    box-shadow: none;
+                }
+            >
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+
+    {% if qs %}
+        <!-- ===== Grid de cards de empresas ===== -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        {% for e in qs %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="card-title mb-4 fs-3">{{ e.name }}</h4>
+
+                        <div class="mt-auto d-flex align-items-center justify-content-between">
+                            <a href="{% url 'enterprise_experiences' e.id %}" class="btn btn-primary btn-sm">Ver experiencias</a>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-white text-dark fs-7">
+                                    {{ e.average_rating|floatformat:1 }} ⭐
+                                </span>
+                                <span class="badge bg-secondary fs-7">
+                                    {{ e.reviews_count }} reviews
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+        No se encontraron empresas{% if q %} para “{{ q }}”{% endif %}.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

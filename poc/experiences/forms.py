@@ -4,9 +4,9 @@
 # ============================================
 
 from django import forms
-from .models import Experience, Comment
+from .models import Review, Comment
 
-
+'''
 # =======================
 # 🔹 FORMULARIO EXPERIENCE
 # =======================
@@ -18,10 +18,10 @@ class ExperienceForm(forms.ModelForm):
     """
     class Meta:
         # Modelo en el cual se basa este formulario
-        model = Experience
-        
+        model = Review
+
         # Campos del modelo que queremos mostrar en el formulario
-        fields = ["company", "title", "summary", "body"]
+        fields = ["enterprise", "title", "summary", "body"]
 
 
 # =======================
@@ -51,3 +51,4 @@ class CommentForm(forms.ModelForm):
                 }
             )
         }
+'''

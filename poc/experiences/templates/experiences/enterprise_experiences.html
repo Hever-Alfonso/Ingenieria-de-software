@@ -1,0 +1,68 @@
+{% extends "experiences/base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- ===== Titulo e información de la empresa ===== -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="mb-2">{{ enterprise.name }}</h2>
+            <p class="mb-0">
+                La empresa tiene {{ enterprise.reviews_count }} reviews | Calificación promedio: {{ enterprise.average_rating|floatformat:1 }} ⭐.
+            </p>
+            <p class="mb-0">
+                A continuación se muestran las experiencias publicadas por todos los usuarios de la plataforma para la empresa:
+            </p>
+        </div>
+
+        <!-- ===== Botones de acción ===== -->
+        <div>
+            <a href=# class="btn btn-info">Publicar Nueva Experiencia</a>
+            <a href="{% url 'index' %}" class="btn btn-outline-light">← Volver</a>
+        </div>
+    </div>
+
+    <!-- ===== Resumen generado por IA ===== -->
+    {% if enterprise.AI_summary %}
+        <div class="alert alert-info py-2 d-flex flex-column align-items-start mb-4">
+            <div class="d-flex align-items-center ">
+                <i class="bi bi-stars fs-5 me-2 text-primary"></i>
+                <div class="fw-bold">Resumen de IA:</div>
+            </div>
+            {{ enterprise.AI_summary }}
+        </div>
+    {% endif %}
+
+    <!-- ===== Listado de reviews ===== -->
+    {% if reviews %}
+        <div class="row row-cols-1 g-3">
+        {% for r in reviews %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="card-title mb-1">{{ r.title }}</h5>
+                        <span class="badge bg-primary badge-lg fs-7">⭐ {{ r.rating }}</span>
+                    </div>
+                    <p class="card-text text-white mb-2">
+                        {{ r.body|truncatechars:240 }}
+                        <a href="{% url 'review_detail' r.pk %}" class="text-info">Ver más</a>
+                    </p>
+                    <small class="text-secondary">
+                        Por {{ r.author|default:"anónimo" }} · {{ r.created_at|date:"Y-m-d H:i" }}
+                    </small>
+                    </div>
+
+                    <div class="card-footer bg-secondary">
+                    <span class="text-white">
+                        {{ r.comments.count }} comentario{{ r.comments.count|pluralize:"s" }}
+                    </span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning">Aún no hay experiencias para esta empresa.</div>
+    {% endif %}
+</div>
+{% endblock %}

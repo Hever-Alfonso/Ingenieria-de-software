@@ -1,0 +1,74 @@
+{% extends "experiences/base.html" %}
+
+{% block content %}
+<div class="container ">
+    <!-- ===== Breadcrumb, título y detalles ===== -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Empresas</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'enterprise_experiences' review.enterprise.pk %}">
+                    {{ review.enterprise.name }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item active text-primary" aria-current="page">Detalle del Review</li>
+                </ol>
+            </nav>
+            <div class="d-flex align-items-center gap-3">
+                <h2 class="mb-1">{{ review.title }}</h2>
+                <span class="badge bg-primary fs-6">⭐ {{ review.rating|floatformat:1 }}</span>
+            </div>
+            <p class="mb-0 text-secondary">
+                Por {{ review.author|default:"anónimo" }} · {{ review.created_at|date:"Y-m-d H:i" }}
+            </p>
+        </div>
+        <div class="">
+            <div class="text-end mt-2">
+                <a href="{% url 'enterprise_experiences' review.enterprise.pk %}" class="btn btn-outline-light">← Volver</a>
+            </div>
+        </div>
+    </div>
+    <hr class="border-secondary">
+    <!-- ===== Cuerpo del review ===== -->
+    <div class="mb-4">
+        <p class="text-white">{{ review.body|linebreaks }}</p>
+    </div>
+    <hr class="border-secondary">
+
+    <!-- ===== Seccion de comentarios ===== -->
+    <div class="mb-4">
+        <!-- ===== Acciones del usuario ===== -->
+        <div class="d-flex align-items-center justify-content-between mb-3 mt-5">
+            <h4>Comentarios ({{ review.comments.count }})</h4>
+            <a href="#"
+                class="btn btn-sm btn-info mb-3"
+                onclick="return false;">
+                + Agregar Comentario
+            </a>
+        </div>
+
+        <!-- ===== Listado de comentarios ===== -->
+        {% if review.comments.all %}
+            <div class="list-group">
+                {% for c in review.comments.all %}
+                <div class="list-group-item bg-dark text-white border-secondary">
+                    <div class="d-flex justify-content-between">
+                    <strong>{{ c.author|default:"anónimo" }}</strong>
+                    <small class="text-secondary">{{ c.created_at|date:"Y-m-d H:i" }}</small>
+                    </div>
+                    <p class="mb-0 mt-2">{{ c.text|linebreaks }}</p>
+                </div>
+                {% empty %}
+                <div class="alert alert-warning mb-0">Aún no hay comentarios.</div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning">Aún no hay comentarios.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
