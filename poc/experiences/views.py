@@ -19,6 +19,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 
 from .models import Enterprise, Review, Comment
+from .forms import SignUpForm
 #from .forms import ExperienceForm, CommentForm
 
 
@@ -32,23 +33,16 @@ def signup(request):
     """
     Registro de usuarios nuevos.
     - GET: muestra formulario.
-    - POST: valida, crea usuario, hace login y redirige a home.
+    - POST: valida, crea usuario, hace login y redirige a index.
     """
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        # Pequeño estilizado para inputs (Bootstrap)
-        for f in form.fields.values():
-            existing = f.widget.attrs.get("class", "")
-            f.widget.attrs["class"] = (existing + " form-control").strip()
+        form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect("home")
+            return redirect("index")
     else:
-        form = UserCreationForm()
-        for f in form.fields.values():
-            existing = f.widget.attrs.get("class", "")
-            f.widget.attrs["class"] = (existing + " form-control").strip()
+        form = SignUpForm()
     return render(request, "experiences/signup.html", {"form": form})
 
 
@@ -56,7 +50,7 @@ def signin(request):
     """
     Inicio de sesión.
     - GET: muestra formulario.
-    - POST: valida credenciales y redirige a home.
+    - POST: valida credenciales y redirige a index.
     """
     form = AuthenticationForm(data=request.POST or None)
     for f in form.fields.values():
@@ -65,7 +59,7 @@ def signin(request):
     if request.method == "POST" and form.is_valid():
         user = form.get_user()
         login(request, user)
-        return redirect("home")
+        return redirect("index")
     return render(request, "experiences/login.html", {"form": form})
 
 

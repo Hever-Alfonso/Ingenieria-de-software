@@ -1,6 +1,6 @@
 {% extends "experiences/base.html" %}
 
-{# 
+{#
   Vista de inicio de sesión (login)
   ==========================================
   - Hereda la estructura general desde base.html
@@ -10,7 +10,7 @@
 {% block content %}
   <div class="row justify-content-center">
     <div class="col-12 col-md-6 col-lg-4">
-      
+
       {# ===== Tarjeta contenedora del login ===== #}
       <div class="card">
         <div class="card-body">
@@ -19,7 +19,7 @@
           {# Formulario de autenticación con protección CSRF #}
           <form method="post">
             {% csrf_token %}
-            
+
             {# Renderizado de campos (username + password) con as_p #}
             {{ form.as_p }}
 

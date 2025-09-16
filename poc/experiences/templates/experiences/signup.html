@@ -1,6 +1,6 @@
 {% extends "experiences/base.html" %}
 
-{# 
+{#
   Vista de registro (signup)
   ==========================================
   - Hereda layout y estilos base desde base.html
@@ -12,14 +12,14 @@
     /* ===== Estilos locales para signup ===== */
 
     /* Contenedor del formulario (centrado y con ancho controlado) */
-    .auth-card { 
-      max-width: 520px; 
-      margin-inline: auto; 
+    .auth-card {
+      max-width: 520px;
+      margin-inline: auto;
     }
 
     /* Etiquetas más marcadas para accesibilidad */
-    .form-label { 
-      font-weight: 600; 
+    .form-label {
+      font-weight: 600;
     }
 
     /* Campos de formulario en modo oscuro */
@@ -44,11 +44,11 @@
     }
 
     /* Errores en rojo claro y sin viñetas */
-    .errorlist { 
-      list-style: none; 
-      padding: 0; 
-      margin: .25rem 0 0; 
-      color: #ffb4b4; 
+    .errorlist {
+      list-style: none;
+      padding: 0;
+      margin: .25rem 0 0;
+      color: #ffb4b4;
     }
   </style>
 
@@ -61,9 +61,21 @@
       <form method="post" novalidate>
         {% csrf_token %}
 
+        {# ---- Campo email ---- #}
+        <div class="mb-3">
+          <label class="form-label" for="{{ form.email.id_for_label }}">Correo electrónico</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <ul class="errorlist">{{ form.email.errors }}</ul>
+          {% endif %}
+          {% if form.email.help_text %}
+            <div class="helptext">{{ form.email.help_text|safe }}</div>
+          {% endif %}
+        </div>
+
         {# ---- Campo usuario ---- #}
         <div class="mb-3">
-          <label class="form-label" for="{{ form.username.id_for_label }}">Usuario</label>
+          <label class="form-label" for="{{ form.username.id_for_label }}">Nombre de Usuario</label>
           {{ form.username }}
           {% if form.username.errors %}
             <ul class="errorlist">{{ form.username.errors }}</ul>
