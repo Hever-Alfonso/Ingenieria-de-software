@@ -36,6 +36,11 @@ urlpatterns = [
     path("reviews/<int:pk>/", views.review_detail, name="review_detail"),
 
     # -------------------------
+    # Creación de nuevas experiencias
+    # -------------------------
+    path("enterprises/<int:pk>/reviews/new/", views.review_create, name="review_create"),
+
+    # -------------------------
     # Autenticación de usuarios
     # -------------------------
     path('signup/', views.signup, name='signup'),

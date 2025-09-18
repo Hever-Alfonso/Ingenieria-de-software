@@ -19,8 +19,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 
 from .models import Enterprise, Review, Comment
-from .forms import SignUpForm
-#from .forms import ExperienceForm, CommentForm
+from .forms import SignUpForm, ReviewForm
 
 
 # ============================================================
@@ -94,6 +93,26 @@ def enterprise_experiences(request, pk):
 def review_detail(request, pk):
     review = get_object_or_404(Review, pk=pk)
     return render(request, "experiences/review_detail.html", {"review": review})
+
+# ============================================================
+# Creación de nuevas reviews
+# ------------------------------------------------------------
+@login_required(login_url="/login/")
+def review_create(request, pk):
+    enterprise = get_object_or_404(Enterprise, pk=pk)
+
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.enterprise = enterprise
+            review.author = request.user
+            review.save()
+            return redirect("review_detail", pk=review.pk)
+    else:
+        form = ReviewForm()
+
+    return render(request, "experiences/review_create.html", {"enterprise": enterprise, "form": form})
 
 '''
 def detail(request, pk):

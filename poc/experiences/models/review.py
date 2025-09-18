@@ -1,3 +1,4 @@
+# experiences/models/review.py
 from django.db import models
 from django.conf import settings
 
@@ -11,6 +12,7 @@ class Review(models.Model):
     title = models.CharField(max_length=160)
     body = models.TextField()
     rating = models.PositiveSmallIntegerField(default=5)  # 1 a 5 estrellas
+    anonymous = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -18,3 +20,10 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.enterprise.name} - {self.title} ({self.rating}⭐)"
+
+    @property
+    def display_author(self):
+        """Nombre a mostrar según flag anónimo."""
+        if self.anonymous:
+            return "anónimo"
+        return getattr(self.author, "username", "anónimo")

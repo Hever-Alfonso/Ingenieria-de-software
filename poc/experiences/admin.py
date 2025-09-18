@@ -27,9 +27,9 @@ class EnterpriseAdmin(admin.ModelAdmin):
 # ------------------------------
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ("enterprise", "title", "author", "rating", "created_at")
+    list_display = ("enterprise", "title", "author", "anonymous", "rating", "created_at")
     search_fields = ("title", "body", "enterprise__name", "author__username")
-    list_filter = ("rating", "created_at", "enterprise")
+    list_filter = ("anonymous", "rating", "created_at", "enterprise")
     ordering = ("-created_at",)
 
 # ------------------------------

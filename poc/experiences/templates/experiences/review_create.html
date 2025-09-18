@@ -1,0 +1,60 @@
+{% extends "experiences/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+        <h2 class="mb-1">Nueva experiencia en {{ enterprise.name }}</h2>
+        <p class="text-white mb-0">
+            Comparte tu reseña para ayudar a otros usuarios.
+        </p>
+        </div>
+        <a href="{% url 'enterprise_experiences' enterprise.id %}" class="btn btn-outline-light btn-sm">
+        ← Volver
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+            <label class="form-label" for="{{ form.title.id_for_label }}">Título</label>
+            {{ form.title }}
+            {% if form.title.errors %}<div class="text-danger small mt-1">{{ form.title.errors }}</div>{% endif %}
+            </div>
+
+            <div class="mb-3">
+            <label class="form-label" for="{{ form.body.id_for_label }}">Descripción</label>
+            {{ form.body }}
+            {% if form.body.errors %}<div class="text-danger small mt-1">{{ form.body.errors }}</div>{% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label" for="{{ form.rating.id_for_label }}">Calificación</label>
+                {{ form.rating }}
+                {% if form.rating.errors %}<div class="text-danger small mt-1">{{ form.rating.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-check form-switch form-check-reverse align-items-center mb-3">
+                {{ form.anonymous }}
+                <label class="form-check-label" for="{{ form.anonymous.id_for_label }}">
+                    {{ form.anonymous.label }}
+                </label>
+                {% if form.anonymous.errors %}
+                    <div class="text-danger small mt-1">{{ form.anonymous.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="d-flex gap-2 justify-content-end">
+                <a class="btn btn-outline-secondary" href="{% url 'enterprise_experiences' enterprise.id %}">Cancelar</a>
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-send me-1"></i> Publicar
+                </button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

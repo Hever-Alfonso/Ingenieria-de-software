@@ -16,7 +16,7 @@
 
         <!-- ===== Botones de acción ===== -->
         <div>
-            <a href=# class="btn btn-info">Publicar Nueva Experiencia</a>
+            <a href="{% url 'review_create' enterprise.id %}" class="btn btn-info">Publicar Nueva Experiencia</a>
             <a href="{% url 'index' %}" class="btn btn-outline-light">← Volver</a>
         </div>
     </div>
@@ -48,7 +48,7 @@
                         <a href="{% url 'review_detail' r.pk %}" class="text-info">Ver más</a>
                     </p>
                     <small class="text-secondary">
-                        Por {{ r.author|default:"anónimo" }} · {{ r.created_at|date:"Y-m-d H:i" }}
+                        Por {{ r.display_author }} · {{ r.created_at|date:"Y-m-d H:i" }}
                     </small>
                     </div>
 

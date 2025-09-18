@@ -23,7 +23,7 @@
                 <span class="badge bg-primary fs-6">⭐ {{ review.rating|floatformat:1 }}</span>
             </div>
             <p class="mb-0 text-secondary">
-                Por {{ review.author|default:"anónimo" }} · {{ review.created_at|date:"Y-m-d H:i" }}
+                Por {{ review.display_author }} · {{ review.created_at|date:"Y-m-d H:i" }}
             </p>
         </div>
         <div class="">
@@ -32,8 +32,9 @@
             </div>
         </div>
     </div>
-    <hr class="border-secondary">
+
     <!-- ===== Cuerpo del review ===== -->
+    <hr class="border-secondary">
     <div class="mb-4">
         <p class="text-white">{{ review.body|linebreaks }}</p>
     </div>
