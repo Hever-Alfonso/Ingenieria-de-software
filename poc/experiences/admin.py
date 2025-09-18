@@ -37,7 +37,7 @@ class ReviewAdmin(admin.ModelAdmin):
 # ------------------------------
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("review", "author", "created_at")
+    list_display = ("review", "author", "anonymous", "created_at")
     search_fields = ("text", "author__username", "review__title", "review__enterprise__name")
-    list_filter = ("created_at",)
+    list_filter = ("anonymous", "created_at")
     ordering = ("created_at",)

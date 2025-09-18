@@ -16,6 +16,7 @@ class Comment(models.Model):
         related_name="review_comments",
     )
     text = models.TextField()
+    anonymous = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -24,5 +25,12 @@ class Comment(models.Model):
         indexes = [models.Index(fields=["review", "created_at"])]
 
     def __str__(self):
-        who = self.author.username if self.author else "anónimo"
+        who = self.display_author
         return f"Comment by {who} on review {self.review_id}"
+
+    @property
+    def display_author(self):
+        """Nombre visible según flag anónimo."""
+        if self.anonymous or not self.author:
+            return "anónimo"
+        return getattr(self.author, "username", "anónimo")

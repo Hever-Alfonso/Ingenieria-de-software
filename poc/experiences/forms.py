@@ -66,6 +66,28 @@ class ReviewForm(forms.ModelForm):
             raise forms.ValidationError("La calificación debe estar entre 1 y 5 estrellas.")
         return r
 
+# =======================
+# FORMULARIO COMMENT
+# =======================
+class CommentForm(forms.ModelForm):
+    anonymous = forms.BooleanField(
+        required=False,
+        label="Publicar como anónimo",
+        widget=forms.CheckboxInput(attrs={"class": "form-check-input"})
+    )
+
+    class Meta:
+        model = Comment
+        fields = ["text", "anonymous"]
+        widgets = {
+            "text": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 3,
+                "placeholder": "Escribe tu comentario…",
+            })
+        }
+        labels = {"text": ""}
+
 '''
 # =======================
 # 🔹 FORMULARIO EXPERIENCE
