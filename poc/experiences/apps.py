@@ -10,7 +10,7 @@ from django.apps import AppConfig
 class ExperiencesConfig(AppConfig):
     # Define el tipo de campo automático por defecto para IDs
     default_auto_field = 'django.db.models.BigAutoField'
-    
+
     # Nombre de la aplicación (debe coincidir con la carpeta del módulo)
     name = 'experiences'
 
