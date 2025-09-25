@@ -6,6 +6,17 @@ Aquí se configuran las opciones principales del proyecto.
 """
 
 from pathlib import Path
+import os
+
+# Config de AI Gemini
+GENAI_CONFIG = {
+    # Max tokens del output
+    "max_output_tokens": 600,
+    # Temperatura baja para resúmenes consistentes
+    "temperature": 0.2,
+    # Desactivar thinking
+    "thinking_config": {"thinking_budget": 0},
+}
 
 # ========================
 # 🔹 RUTA BASE DEL PROYECTO
@@ -42,7 +53,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',    # Manejo de archivos estáticos (CSS, JS, etc.)
     
     # 👉 Nuestra app principal donde están los modelos, views y templates
-    'experiences',
+    #'experiences',
+    'experiences.apps.ExperiencesConfig',  # Asegura que el método ready() se ejecute
 ]
 
 

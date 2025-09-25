@@ -1,105 +1,140 @@
 # ============================================
 # poc/experiences/services.py
-# Servicios y señales para mantener actualizado
-# el modelo CompanySummary automáticamente
 # ============================================
 
-from django.db.models.signals import post_save, post_delete, pre_save
-from django.dispatch import receiver
-from .models import Experience, Comment
+from __future__ import annotations
+import os
+import textwrap
+from typing import List, Dict, Any
+from django.conf import settings
+from .models import Enterprise
+from google import genai
+from google.genai import types
+import logging
 
+def get_client() -> genai.Client:
+    api_key = os.environ.get("GEMINI_API_KEY")
 
-# =======================
-# 🔹 FUNCIÓN AUXILIAR
-# =======================
-def _summarize(company: str):
-    """
-    Recalcula y actualiza el resumen de una empresa.
-    
-    - Intenta usar un servicio externo `summarize_company` (si está disponible).
-    - Si falla, genera un resumen mínimo con conteo de posts y comentarios,
-      de forma que nunca se rompa el flujo de guardado.
-    """
-    try:
-        # Import "perezoso" (lazy import): evita dependencias circulares
-        from .services import summarize_company  
-        summarize_company(company)
-        return
-    except Exception:
-        # ⚠️ Fallback ultra simple en caso de error
-        from django.utils import timezone
-        from .models import CompanySummary, Experience, Comment
+    if not api_key:
+        raise RuntimeError("Falta GEMINI_API_KEY en el entorno.")
 
-        # Contar posts y comentarios de la empresa
-        posts = Experience.objects.filter(company__iexact=company).count()
-        comments = Comment.objects.filter(experience__company__iexact=company).count()
-        text = "Resumen pendiente de cálculo (servicio no disponible por ahora)."
+    return genai.Client()
 
-        # Actualizar o crear el resumen
-        CompanySummary.objects.update_or_create(
-            company=company,
-            defaults={
-                "summary": text,
-                "total_posts": posts,
-                "total_comments": comments,
-                "last_computed": timezone.now(),
-            }
+def get_config() -> Dict[str, Any]:
+    cfg = getattr(settings, "GENAI_CONFIG", {}) # Obtener configuración desde settings.py
+    thinking_cfg = cfg.get("thinking_config", {}) # Configuración de 'thinking'
+
+    # Construir y devolver configuración completa
+    return types.GenerateContentConfig(
+        temperature=cfg.get("temperature", 0.2),
+        max_output_tokens=cfg.get("max_output_tokens", 600),
+        thinking_config=types.ThinkingConfig(**thinking_cfg),
+    )
+
+def build_corpus(enterprise: Enterprise, max_chars: int = 18000) -> str:
+    """Corpus condensado de todas las reviews de la empresa."""
+    reviews = [] # Lista que contendrá cada review formateada
+    qs = enterprise.reviews.order_by("-created_at").values(
+        "title", "body", "rating", "anonymous", "created_at", "author__username"
+    ) # QuerySet optimizado
+
+    # Para cada review, formatear y añadir a la lista
+    for r in qs:
+        created = r["created_at"].strftime("%Y-%m-%d")
+        reviews.append(
+            textwrap.dedent(
+                f"""\
+                - Review:
+                    título: {r["title"]}
+                    rating: {r["rating"]}⭐
+                    fecha: {created}
+                    texto: {r["body"]}
+                """
+            )
         )
 
+    # Unir todas las reviews en un solo string y truncar si es necesario
+    corpus = "\n".join(reviews).strip()
+    if len(corpus) > max_chars:
+        corpus = corpus[:max_chars] + "\n\n[TRUNCADO]"
 
-# =======================
-# 🔹 SEÑALES SOBRE COMMENTS
-# =======================
+    return corpus
 
-@receiver(post_save, sender=Comment)
-@receiver(post_delete, sender=Comment)
-def _recalc_on_comment_change(sender, instance, **kwargs):
+def build_prompt(enterprise: Enterprise, corpus: str) -> str:
+    """Prompt en español para un resumen ejecutivo claro y equilibrado."""
+    return textwrap.dedent(
+        f"""\
+        Eres un analista que resume experiencias de usuarios sobre empresas.
+        Genera un RESUMEN claro y equilibrado con base en todas las reviews para la empresa "{enterprise.name}".
+
+        Reglas:
+        - Idioma: español.
+        - Extensión: ~8-10 frases, estilo ejecutivo.
+        - Estilo: Un parrafo. No negritas ni estilos adicionales. Solo texto plano.
+        - Incluye: puntos fuertes, puntos a mejorar, patrones recurrentes (positivos/negativos) y una conclusión breve.
+        - No inventes: usa únicamente el texto proporcionado.
+        - Evita datos personales o identificar usuarios.
+
+        Reviews (extracto):
+        {corpus}
+        """
+    )
+
+def summarize_enterprise_reviews(enterprise: Enterprise) -> str:
     """
-    Cada vez que se crea o elimina un comentario,
-    recalculamos el resumen de la empresa correspondiente.
+    Llama a Gemini y devuelve el resumen (no persiste).
     """
-    company = getattr(instance.experience, "company", None)
-    if company:
-        _summarize(company)
 
-
-# =======================
-# 🔹 SEÑALES SOBRE EXPERIENCE (cambios de empresa)
-# =======================
-
-@receiver(pre_save, sender=Experience)
-def _recalc_on_experience_company_change(sender, instance, **kwargs):
-    """
-    Detecta si una publicación cambia de empresa.
-    - Si cambia, recalculamos tanto la empresa vieja como la nueva.
-    """
-    if not instance.pk:  # Si es un objeto nuevo, no hay "empresa previa"
-        return
     try:
-        old = Experience.objects.get(pk=instance.pk)
-    except Experience.DoesNotExist:
-        return
+        # Construir corpus y prompt
+        corpus = build_corpus(enterprise)
+        prompt = build_prompt(enterprise, corpus)
 
-    if old.company != instance.company:
-        # Recalcular para la empresa anterior
-        if old.company:
-            _summarize(old.company)
-        # Y para la empresa nueva
-        if instance.company:
-            _summarize(instance.company)
+        # Obtener cliente y configuración
+        client = get_client()
+        model = os.environ.get("GEMINI_MODEL")
+        config = get_config()
 
+        # Llamar a la API de generación de contenido
+        resp = client.models.generate_content(
+            model=model,
+            contents=prompt,
+            config=config,
+        )
 
-# =======================
-# 🔹 SEÑALES SOBRE EXPERIENCE (crear / eliminar)
-# =======================
+        # Extraer y devolver el texto generado
+        summary = resp.text.strip()
+        return summary
 
-@receiver(post_save, sender=Experience)
-@receiver(post_delete, sender=Experience)
-def _recalc_on_experience_create_delete(sender, instance, **kwargs):
+    except Exception as e:
+        raise RuntimeError(f"Error al generar resumen: {e}")
+
+def update_enterprise_summary(enterprise_id: int) -> None:
     """
-    Cada vez que se crea o elimina una experiencia,
-    recalculamos el resumen de su empresa.
+    Recalcula y persiste el resumen en Enterprise.AI_summary.
+    Maneja ausencia de reviews y errores de red/SDK.
     """
-    company = getattr(instance, "company", None)
-    if company:
-        _summarize(company)
+    try:
+        # Obtener empresa y verificar reviews
+        enterprise = Enterprise.objects.get(pk=enterprise_id)
+
+        # Si no hay reviews, limpiar resumen y salir
+        if not enterprise.reviews.exists() or enterprise.reviews.count() == 0:
+            enterprise.AI_summary = ""
+            enterprise.save(update_fields=["AI_summary"])
+            return
+
+        # Generar nuevo resumen
+        summary = summarize_enterprise_reviews(enterprise)
+        if not summary:
+            summary = "Aún no hay suficiente información para generar un resumen fiable."
+
+        # Guardar resumen
+        enterprise.AI_summary = summary
+        enterprise.save(update_fields=["AI_summary"])
+
+    except Exception as e:
+        Enterprise.objects.filter(pk=enterprise_id).update(
+            AI_summary="No fue posible actualizar el resumen en este momento."
+        )
+        logging.error(f"Error al actualizar resumen para Enterprise {enterprise_id}: {e}")
