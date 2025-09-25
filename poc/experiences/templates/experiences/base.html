@@ -75,7 +75,10 @@
       <!-- Contenedor de acciones (derecha) -->
       <div class="d-flex align-items-center gap-2 ms-auto">
         {% if user.is_authenticated %}
-          <span class="small text-light d-none d-sm-inline">Hola, {{ user.username }}</span>
+        <span class="small text-light d-none d-sm-inline">Hola, {{ user.username }}</span>
+          <a class="btn btn-outline-light btn-sm" href="{% url 'user_posts' %}">
+            Mis publicaciones
+          </a>
           <a class="btn btn-outline-light btn-sm" href="{% url 'logout' %}">Salir</a>
         {% else %}
           <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Iniciar Sesión</a>

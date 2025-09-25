@@ -1,0 +1,152 @@
+{% extends "experiences/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+        <h2 class="mb-2">Mis publicaciones</h2>
+        <p class="mb-0 text-secondary">Aquí puedes ver y eliminar tus reviews y comentarios.</p>
+        </div>
+        <a href="{% url 'index' %}" class="btn btn-outline-light">← Volver</a>
+    </div>
+
+    <div class="row g-4">
+        <!-- ==== Reviews ==== -->
+        <div class="col-12 col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+            <h4 class="card-title mb-3">Mis reviews</h4>
+
+            {% if user_reviews %}
+                <div class="list-group list-group-flush">
+                {% for r in user_reviews %}
+                    <div class="list-group-item bg-transparent text-white border-secondary">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="me-3">
+                        <div class="fw-semibold">
+                            Título: {{ r.title }}
+                            <span class="badge bg-primary ms-2">⭐ {{ r.rating }}</span>
+                            {% if r.anonymous %}
+                            <span class="badge bg-secondary ms-1">anónimo</span>
+                            {% endif %}
+                        </div>
+                        <small class="text-secondary">
+                            {{ r.enterprise.name }} · {{ r.created_at|date:"Y-m-d H:i" }}
+                        </small>
+                        <p class="mb-1 mt-2">{{ r.body|truncatechars:160 }}</p>
+                        <a class="text-info" href="{% url 'review_detail' r.pk %}">Ver detalle</a>
+                        </div>
+
+                        <!-- ==== Botón que dispara el modal ==== -->
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            title="Eliminar review"
+                            data-bs-toggle="modal"
+                            data-bs-target="#confirmDeleteModal"
+                            data-delete-url="{% url 'delete_review' r.pk %}"
+                            data-item-label="la review «{{ r.title }}»">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-warning mb-0">Aún no has publicado reviews.</div>
+            {% endif %}
+            </div>
+        </div>
+        </div>
+
+        <!-- ==== Comentarios ==== -->
+        <div class="col-12 col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+            <h4 class="card-title mb-3">Mis comentarios</h4>
+
+            {% if user_comments %}
+                <div class="list-group list-group-flush">
+                {% for c in user_comments %}
+                    <div class="list-group-item bg-transparent text-white border-secondary">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="me-3">
+                        <div class="fw-semibold">
+                            En: “{{ c.review.title }}”
+                            {% if c.anonymous %}
+                            <span class="badge bg-secondary ms-1">anónimo</span>
+                            {% endif %}
+                        </div>
+                        <small class="text-secondary">
+                            {{ c.review.enterprise.name }} · {{ c.created_at|date:"Y-m-d H:i" }}
+                        </small>
+                        <p class="mb-1 mt-2">{{ c.text|linebreaksbr }}</p>
+                        <a class="text-info" href="{% url 'review_detail' c.review.pk %}">Ir a la review</a>
+                        </div>
+
+                        <!-- ===== Botón que dispara el modal ===== -->
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            title="Eliminar comentario"
+                            data-bs-toggle="modal"
+                            data-bs-target="#confirmDeleteModal"
+                            data-delete-url="{% url 'delete_comment' c.pk %}"
+                            data-item-label="tu comentario en «{{ c.review.title }}»">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-warning mb-0">Aún no has publicado comentarios.</div>
+            {% endif %}
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- ===== Modal de confirmación de borrado ===== -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color:#161b22; color:#c9d1d9; border:1px solid #30363d;">
+        <div class="modal-header">
+            <h5 class="modal-title" id="confirmDeleteLabel">Confirmar eliminación.</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+            ¿Seguro que deseas eliminar <span id="itemLabel" class="fw-semibold"></span>? Esta acción no se puede deshacer.
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+            <form id="confirmDeleteForm" method="post" action="#">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash"></i> Eliminar
+            </button>
+            </form>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Script para inyectar la URL y etiqueta en el modal ===== -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('confirmDeleteModal');
+        modal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var deleteUrl = button.getAttribute('data-delete-url');
+            var itemLabel = button.getAttribute('data-item-label');
+
+            var form = modal.querySelector('#confirmDeleteForm');
+            var labelSpan = modal.querySelector('#itemLabel');
+
+            form.setAttribute('action', deleteUrl);
+            labelSpan.textContent = itemLabel || 'este elemento';
+        });
+    });
+</script>
+{% endblock %}

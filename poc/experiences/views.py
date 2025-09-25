@@ -1,14 +1,5 @@
 # ============================================================
 # poc/experiences/views.py
-# Vistas de la app: publicación/listado, detalle, auth y resúmenes
-# ------------------------------------------------------------
-# Ideas clave:
-# - Generamos un RESUMEN tipo insight por empresa a partir de
-#   publicaciones y comentarios (sin dependencias externas).
-# - Agrupamos variantes de marca (p.ej. "Claro", "Claro Colombia",
-#   "Claro S.A.S.") para que cuenten como la misma empresa.
-# - Cacheamos el resultado en CompanySummary y lo refrescamos
-#   cuando cambian los datos.
 # ============================================================
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -16,16 +7,14 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.http import HttpResponse
-
+from django.http import HttpResponse, HttpResponseForbidden
+from django.views.decorators.http import require_POST
 from .models import Enterprise, Review, Comment
 from .forms import SignUpForm, ReviewForm, CommentForm
 
 
 # ============================================================
-# 🔹 Autenticación básica (signup / login / logout)
-# ------------------------------------------------------------
-# Vistas sencillas con formularios estándar de Django.
+# Autenticación básica (signup / login / logout)
 # ============================================================
 
 def signup(request):
@@ -116,6 +105,7 @@ def review_detail(request, pk):
         "experiences/review_detail.html",
         {"review": review, "comments": comments, "form": form},
     )
+
 # ============================================================
 # Creación de nuevas reviews
 # ------------------------------------------------------------
@@ -135,6 +125,51 @@ def review_create(request, pk):
         form = ReviewForm()
 
     return render(request, "experiences/review_create.html", {"enterprise": enterprise, "form": form})
+
+# ============================================================
+# Gestión de publicaciones y comentarios del usuario autenticado
+# ------------------------------------------------------------
+@login_required(login_url="/login/")
+def user_posts(request):
+    """
+    Lista las publicaciones (reviews y comentarios) del usuario autenticado.
+    Incluye tanto las que marcó como anónimas como las públicas, ya que la autoría
+    sigue siendo del usuario.
+    """
+    user = request.user
+    user_reviews = Review.objects.filter(author=user).select_related("enterprise").order_by("-created_at")
+    user_comments = Comment.objects.filter(author=user).select_related("review", "review__enterprise").order_by("-created_at")
+    return render(
+        request,
+        "experiences/user_posts.html",
+        {"user_reviews": user_reviews, "user_comments": user_comments},
+    )
+
+
+@login_required(login_url="/login/")
+@require_POST
+def delete_review(request, pk):
+    """
+    Elimina una review del usuario. Solo el autor puede eliminar.
+    """
+    review = get_object_or_404(Review, pk=pk)
+    if review.author_id != request.user.id:
+        return HttpResponseForbidden("No tienes permiso para eliminar esta review.")
+    review.delete()
+    return redirect("user_posts")
+
+
+@login_required(login_url="/login/")
+@require_POST
+def delete_comment(request, pk):
+    """
+    Elimina un comentario del usuario. Solo el autor puede eliminar.
+    """
+    comment = get_object_or_404(Comment, pk=pk)
+    if comment.author_id != request.user.id:
+        return HttpResponseForbidden("No tienes permiso para eliminar este comentario.")
+    comment.delete()
+    return redirect("user_posts")
 
 def health(request):
     """Endpoint de salud (health check)."""
