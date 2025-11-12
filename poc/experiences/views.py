@@ -127,6 +127,30 @@ def review_create(request, pk):
     return render(request, "experiences/review_create.html", {"enterprise": enterprise, "form": form})
 
 # ============================================================
+# Edición de reviews existentes
+# ------------------------------------------------------------
+@login_required(login_url="/login/")
+def review_edit(request, pk):
+    """
+    Permite al autor editar su review.
+    """
+    review = get_object_or_404(Review, pk=pk)
+
+    # Verificar que el usuario es el autor
+    if review.author_id != request.user.id:
+        return HttpResponseForbidden("No tienes permiso para editar esta review.")
+
+    if request.method == "POST":
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            return redirect("review_detail", pk=review.pk)
+    else:
+        form = ReviewForm(instance=review)
+
+    return render(request, "experiences/review_edit.html", {"review": review, "form": form})
+
+# ============================================================
 # Gestión de publicaciones y comentarios del usuario autenticado
 # ------------------------------------------------------------
 @login_required(login_url="/login/")
@@ -170,6 +194,30 @@ def delete_comment(request, pk):
         return HttpResponseForbidden("No tienes permiso para eliminar este comentario.")
     comment.delete()
     return redirect("user_posts")
+
+# ============================================================
+# Edición de comentarios existentes
+# ------------------------------------------------------------
+@login_required(login_url="/login/")
+def comment_edit(request, pk):
+    """
+    Permite al autor editar su comentario.
+    """
+    comment = get_object_or_404(Comment, pk=pk)
+
+    # Verificar que el usuario es el autor
+    if comment.author_id != request.user.id:
+        return HttpResponseForbidden("No tienes permiso para editar este comentario.")
+
+    if request.method == "POST":
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            return redirect("review_detail", pk=comment.review.pk)
+    else:
+        form = CommentForm(instance=comment)
+
+    return render(request, "experiences/comment_edit.html", {"comment": comment, "form": form})
 
 def health(request):
     """Endpoint de salud (health check)."""

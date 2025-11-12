@@ -45,7 +45,9 @@ urlpatterns = [
     # -------------------------
     path("me/posts/", views.user_posts, name="user_posts"),
     path("me/posts/review/<int:pk>/delete/", views.delete_review, name="delete_review"),
+    path("me/posts/review/<int:pk>/edit/", views.review_edit, name="edit_review"),
     path("me/posts/comment/<int:pk>/delete/", views.delete_comment, name="delete_comment"),
+    path("me/posts/comment/<int:pk>/edit/", views.comment_edit, name="edit_comment"),
 
     # -------------------------
     # Autenticación de usuarios

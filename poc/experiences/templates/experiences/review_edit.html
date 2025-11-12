@@ -1,0 +1,86 @@
+{% extends "experiences/base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- ===== Encabezado ===== -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="mb-2">Editar review</h2>
+            <p class="mb-0 text-secondary">
+                Empresa: <strong>{{ review.enterprise.name }}</strong>
+            </p>
+        </div>
+        <a href="{% url 'user_posts' %}" class="btn btn-outline-secondary">← Volver</a>
+    </div>
+
+    <!-- ===== Formulario de edición ===== -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <!-- Mensajes de error globales -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- Campo: Título -->
+                <div class="mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">
+                        {{ form.title.label }}
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Campo: Descripción -->
+                <div class="mb-3">
+                    <label for="{{ form.body.id_for_label }}" class="form-label">
+                        {{ form.body.label }}
+                    </label>
+                    {{ form.body }}
+                    {% if form.body.errors %}
+                        <div class="text-danger small mt-1">{{ form.body.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Campo: Calificación -->
+                <div class="mb-3">
+                    <label for="{{ form.rating.id_for_label }}" class="form-label">
+                        {{ form.rating.label }}
+                    </label>
+                    {{ form.rating }}
+                    {% if form.rating.errors %}
+                        <div class="text-danger small mt-1">{{ form.rating.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Campo: Anónimo -->
+                <div class="form-check form-switch mb-4">
+                    {{ form.anonymous }}
+                    <label class="form-check-label" for="{{ form.anonymous.id_for_label }}">
+                        {{ form.anonymous.label }}
+                    </label>
+                    {% if form.anonymous.errors %}
+                        <div class="text-danger small mt-1">{{ form.anonymous.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i> Guardar cambios
+                    </button>
+                    <a href="{% url 'user_posts' %}" class="btn btn-outline-secondary">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

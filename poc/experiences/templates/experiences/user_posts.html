@@ -7,7 +7,7 @@
         <h2 class="mb-2">Mis publicaciones</h2>
         <p class="mb-0 text-secondary">Aquí puedes ver y eliminar tus reviews y comentarios.</p>
         </div>
-        <a href="{% url 'index' %}" class="btn btn-outline-light">← Volver</a>
+        <a href="{% url 'index' %}" class="btn btn-outline-secondary">← Volver</a>
     </div>
 
     <div class="row g-4">
@@ -20,7 +20,7 @@
             {% if user_reviews %}
                 <div class="list-group list-group-flush">
                 {% for r in user_reviews %}
-                    <div class="list-group-item bg-transparent text-white border-secondary">
+                    <div class="list-group-item bg-light text-dark border">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="me-3">
                         <div class="fw-semibold">
@@ -37,17 +37,25 @@
                         <a class="text-info" href="{% url 'review_detail' r.pk %}">Ver detalle</a>
                         </div>
 
-                        <!-- ==== Botón que dispara el modal ==== -->
-                        <button
-                            type="button"
-                            class="btn btn-sm btn-outline-danger"
-                            title="Eliminar review"
-                            data-bs-toggle="modal"
-                            data-bs-target="#confirmDeleteModal"
-                            data-delete-url="{% url 'delete_review' r.pk %}"
-                            data-item-label="la review «{{ r.title }}»">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        <!-- ==== Botones de editar y eliminar ==== -->
+                        <div class="d-flex gap-2">
+                            <a
+                                href="{% url 'edit_review' r.pk %}"
+                                class="btn btn-sm btn-outline-primary"
+                                title="Editar review">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger"
+                                title="Eliminar review"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal"
+                                data-delete-url="{% url 'delete_review' r.pk %}"
+                                data-item-label="la review «{{ r.title }}»">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     </div>
                     </div>
                 {% endfor %}
@@ -68,7 +76,7 @@
             {% if user_comments %}
                 <div class="list-group list-group-flush">
                 {% for c in user_comments %}
-                    <div class="list-group-item bg-transparent text-white border-secondary">
+                    <div class="list-group-item bg-light text-dark border">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="me-3">
                         <div class="fw-semibold">
@@ -84,17 +92,25 @@
                         <a class="text-info" href="{% url 'review_detail' c.review.pk %}">Ir a la review</a>
                         </div>
 
-                        <!-- ===== Botón que dispara el modal ===== -->
-                        <button
-                            type="button"
-                            class="btn btn-sm btn-outline-danger"
-                            title="Eliminar comentario"
-                            data-bs-toggle="modal"
-                            data-bs-target="#confirmDeleteModal"
-                            data-delete-url="{% url 'delete_comment' c.pk %}"
-                            data-item-label="tu comentario en «{{ c.review.title }}»">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        <!-- ===== Botones de editar y eliminar ===== -->
+                        <div class="d-flex gap-2">
+                            <a
+                                href="{% url 'edit_comment' c.pk %}"
+                                class="btn btn-sm btn-outline-primary"
+                                title="Editar comentario">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger"
+                                title="Eliminar comentario"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal"
+                                data-delete-url="{% url 'delete_comment' c.pk %}"
+                                data-item-label="tu comentario en «{{ c.review.title }}»">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     </div>
                     </div>
                 {% endfor %}
@@ -120,7 +136,7 @@
             ¿Seguro que deseas eliminar <span id="itemLabel" class="fw-semibold"></span>? Esta acción no se puede deshacer.
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
             <form id="confirmDeleteForm" method="post" action="#">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">
