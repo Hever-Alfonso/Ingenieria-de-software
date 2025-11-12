@@ -28,7 +28,7 @@
         </div>
         <div class="">
             <div class="text-end mt-2">
-                <a href="{% url 'enterprise_experiences' review.enterprise.pk %}" class="btn btn-outline-light">← Volver</a>
+                <a href="{% url 'enterprise_experiences' review.enterprise.pk %}" class="btn btn-outline-secondary">← Volver</a>
             </div>
         </div>
     </div>
@@ -107,7 +107,7 @@
         {% if comments %}
             <div class="list-group">
                 {% for c in comments %}
-                    <div class="list-group-item bg-dark text-white border-secondary">
+                    <div class="list-group-item bg-light text-dark border">
                         <div class="d-flex justify-content-between">
                             <strong>{{ c.display_author }}</strong>
                             <small class="text-secondary">{{ c.created_at|date:"Y-m-d H:i" }}</small>

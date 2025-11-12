@@ -20,8 +20,8 @@
     body {
       display: flex;
       flex-direction: column;
-      background-color: #0d1117;
-      color: #c9d1d9;
+      background-color: #f8f9fa; /* fondo claro */
+      color: #212529;            /* texto oscuro */
       padding-top: 120px;
     }
 
@@ -29,36 +29,40 @@
       flex: 1;
     }
 
-    /* Tarjetas en modo oscuro */
-    .card { background-color: #161b22; border: 1px solid #30363d; }
+    /* Tarjetas claras */
+    .card { 
+      background-color: #ffffff; 
+      border: 1px solid #dee2e6; 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
 
-    /* Títulos y texto del footer en blanco */
+    /* Títulos y texto oscuros */
     .card-title, h1, h2, h3, h4, h5, footer p {
-      color: #ffffff !important;
+      color: #212529 !important;
       font-weight: 600;
     }
 
-    /* Etiquetas de formularios (labels, hints de Bootstrap/Django) en blanco */
-    label, .form-label, .form-text { color: #ffffff !important; }
+    /* Etiquetas de formularios */
+    label, .form-label, .form-text { color: #212529 !important; }
 
-    /* Inputs en modo oscuro */
+    /* Inputs en modo claro */
     .form-control {
-      background-color: #0d1117;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
+      background-color: #ffffff;
+      color: #212529;
+      border: 1px solid #ced4da;
     }
 
     /* Estilo al hacer focus en inputs */
     .form-control:focus {
-      background-color: #0d1117;
-      color: #ffffff;
-      border-color: #58a6ff;
-      box-shadow: 0 0 0 0.2rem rgba(88,166,255,0.25);
+      background-color: #ffffff;
+      color: #212529;
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
     }
 
-    /* Textos de ayuda de Django (helptext) en gris/blanco */
+    /* Textos de ayuda */
     .helptext, .helptext ul, .helptext li {
-      color: #e9eef7 !important;
+      color: #6c757d !important;
       font-size: .85rem;
       margin-top: .25rem;
     }
@@ -67,21 +71,21 @@
 <body>
 
   <!-- ===== Barra de navegación ===== -->
-  <nav class="navbar navbar-expand-lg border-bottom fixed-top bg-dark">
+  <nav class="navbar navbar-expand-lg border-bottom fixed-top bg-white shadow-sm">
     <div class="container py-2">
       <!-- Logo / enlace a inicio -->
-      <a class="navbar-brand text-white fw-semibold fs-2" href="{% url 'index' %}">AskMeJobs</a>
+      <a class="navbar-brand text-primary fw-semibold fs-2" href="{% url 'index' %}">AskMeJobs</a>
 
       <!-- Contenedor de acciones (derecha) -->
       <div class="d-flex align-items-center gap-2 ms-auto">
         {% if user.is_authenticated %}
-        <span class="small text-light d-none d-sm-inline">Hola, {{ user.username }}</span>
-          <a class="btn btn-outline-light btn-sm" href="{% url 'user_posts' %}">
+        <span class="small text-dark d-none d-sm-inline">Hola, {{ user.username }}</span>
+          <a class="btn btn-outline-primary btn-sm" href="{% url 'user_posts' %}">
             Mis publicaciones
           </a>
-          <a class="btn btn-outline-light btn-sm" href="{% url 'logout' %}">Salir</a>
+          <a class="btn btn-outline-secondary btn-sm" href="{% url 'logout' %}">Salir</a>
         {% else %}
-          <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Iniciar Sesión</a>
+          <a class="btn btn-outline-primary btn-sm" href="{% url 'login' %}">Iniciar Sesión</a>
           <a class="btn btn-primary btn-sm" href="{% url 'signup' %}">Registrarme</a>
         {% endif %}
       </div>
@@ -95,7 +99,7 @@
 
   <!-- ===== Footer ===== -->
   <footer class="container pb-5">
-    <p class="small mb-0 text-light">PoC · Ingeniería de Software</p>
+    <p class="small mb-0 text-muted">PoC · Ingeniería de Software</p>
   </footer>
 </body>
 </html>

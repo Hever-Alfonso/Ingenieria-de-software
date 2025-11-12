@@ -7,6 +7,7 @@
   - Define un formulario de creación de usuario con estilos adaptados al tema oscuro
   - Incluye manejo de errores y textos de ayuda para guiar al usuario
 #}
+
 {% block content %}
   <style>
     /* ===== Estilos locales para signup ===== */
@@ -15,47 +16,64 @@
     .auth-card {
       max-width: 520px;
       margin-inline: auto;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
     }
 
     /* Etiquetas más marcadas para accesibilidad */
     .form-label {
       font-weight: 600;
+      color: #212529;
     }
 
-    /* Campos de formulario en modo oscuro */
+    /* Campos de formulario */
     input, select, textarea {
-      background: #0d1117 !important;
-      color: #e9eef7 !important;
-      border: 1px solid #30363d !important;
+      background-color: #ffffff !important;
+      color: #212529 !important;
+      border: 1px solid #ced4da !important;
+      border-radius: 6px !important;
+      transition: all 0.2s ease-in-out;
     }
 
-    /* Efecto focus (resalta campo activo en azul) */
     input:focus, select:focus, textarea:focus {
-      box-shadow: 0 0 0 .2rem rgba(88,166,255,.25) !important;
-      border-color: #58a6ff !important;
+      border-color: #0d6efd !important;
+      box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25) !important;
       outline: 0;
     }
 
-    /* Textos de ayuda (help_text de Django) en blanco suave */
+    /* Textos de ayuda */
     .helptext, .helptext ul, .helptext li {
-      color: #e9eef7 !important;
+      color: #6c757d !important;
       font-size: .85rem;
       margin-top: .25rem;
     }
 
-    /* Errores en rojo claro y sin viñetas */
+    /* Errores */
     .errorlist {
       list-style: none;
       padding: 0;
       margin: .25rem 0 0;
-      color: #ffb4b4;
+      color: #dc3545;
+      font-size: .9rem;
+    }
+
+    /* Botón */
+    .btn-success {
+      background-color: #198754;
+      border: none;
+      font-weight: 600;
+      padding: 0.6rem;
+    }
+
+    .btn-success:hover {
+      background-color: #157347;
     }
   </style>
 
   {# ===== Tarjeta principal del formulario ===== #}
   <div class="card auth-card">
-    <div class="card-body">
-      <h1 class="h5 mb-3 text-light">Crear cuenta</h1>
+    <div class="card-body p-4">
+      <h1 class="h5 mb-4 text-center text-dark fw-bold">Crear cuenta</h1>
 
       {# Formulario de registro con protección CSRF #}
       <form method="post" novalidate>

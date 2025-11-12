@@ -17,7 +17,7 @@
         <!-- ===== Botones de acción ===== -->
         <div>
             <a href="{% url 'review_create' enterprise.id %}" class="btn btn-info">Publicar Nueva Experiencia</a>
-            <a href="{% url 'index' %}" class="btn btn-outline-light">← Volver</a>
+            <a href="{% url 'index' %}" class="btn btn-outline-secondary">← Volver</a>
         </div>
     </div>
 
@@ -43,7 +43,7 @@
                         <h5 class="card-title mb-1">{{ r.title }}</h5>
                         <span class="badge bg-primary badge-lg fs-7">⭐ {{ r.rating }}</span>
                     </div>
-                    <p class="card-text text-white mb-2">
+                    <p class="card-text text-dark mb-2">
                         {{ r.body|truncatechars:240 }}
                         <a href="{% url 'review_detail' r.pk %}" class="text-info">Ver más</a>
                     </p>
